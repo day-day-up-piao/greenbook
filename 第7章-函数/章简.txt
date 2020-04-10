@@ -1,0 +1,450 @@
+7.1 函数定义
+    函数定义表达式：
+    var f = function(){}
+    函数定义表达式可以包含名称，这在递归时很有用：
+    var f = function fact(x){
+        if(x<=1){
+            return 1;
+        }else{
+            return x*fact(x-1);
+        }
+    }
+    函数声明：
+    function f(){}
+    函数声明不能出现在循环、条件判断或者try/catch/finally以及with语句中。
+
+    //输出o的每个属性的名称和值，返回undefined
+    function printprops(o){
+        for(var p in o){
+            console.log(p+": "+o[p]+"\n")
+        }
+    }
+
+    //计算两个笛卡尔坐标(x1,y1)和(x2,y2)之间的距离
+    function distance(x1,y1,x2,y2){
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+        return Math.sqrt(dx*dx+dy*dy);
+    }
+
+    //计算阶乘的递归函数（调用自身的函数）
+    //x!的值是从x到x递减（步长为1）的值的累乘
+    function factorial(x){
+        if(x<=1){
+            return 1;
+        }
+        return x*factorial(x-1);
+    }
+
+    //这个函数表达式定义了一个函数用来求传入参数的平方
+    //注意我们把它赋值给一个变量
+    var square = function(x){return x*x}
+
+    //函数表达式可以包含名称，这在递归是很有用
+    var f = function fact(x){
+        if(x<=1){
+            return 1;
+        }else{
+            return x*fact(x-1);
+        }
+    }
+
+    //函数表达式也可以作为参数传给其他函数
+    data.sort(function(a,b){return a-b;})
+
+    //函数表达式有时定以后立即调用
+    var tensquared = (function(x){return x*x;}(10))
+
+7.2 函数调用
+    调用javascript函数的方式：
+    .作为函数
+    .作为方法
+    .作为构造函数
+    .通过它们的call()和apply()方法间接调用
+    7.2.1 函数调用
+        printprops({x:1});
+        根据ECMA 3和非严格的ECMA 5对函数调用的规定，调用上下文（this的值）是全局对象。在严格模式下，调用上下文则是undefined。
+        以函数形式调用的函数通常不是用this关键字，不过"this"可以用来判断当前是否是严格模式：
+        //定义并调用一个函数来确定当前脚本运行时是否为严格模式
+        var strict = (function(){return !this;}())
+
+    7.2.2 方法调用
+        一个方法无非是保存在一个对象的属性里的javascript函数。
+        对象.方法名()
+        方法调用和函数调用有一个重要的区别，即：调用上下文。属性访问表达式由两部分组成：一个对象和属性名称。在这样的方法调用表达式里，对象称为调用上下文，函数体可以使用关键字this引用该对象：
+        var calculator = {
+            operand1:1,
+            operand2:1,
+            add:function(){
+                //注意this关键字的用法，this指代当前对象
+                this.result = this.operand1 + this.operand2;
+            }
+        };
+        calculator.add();//这个方法调用计算1+1的结果
+        calculator.result;// =>2
+
+        关键字this没有作用域的限制，嵌套的函数不会从调用它的函数中继承this。如果嵌套函数作为方法调用，其this的值指向调用它的对象。如果嵌套函数作为函数调用，其this值不是全局对象（非严格模式下）就是undefined（严格模式下）。很多人误以为调用嵌套函数时this会指向调用外层函数的上下文。如果想访问这个外部函数的this值，需要将this的值保存在一个变量里，这个变量和内部函数都同在一个作用域内。通常使用变量self来保存this：
+        var o = {
+            m:function(){//对象中的方法m()
+                var self = this;//将this的值保存至一个变量中
+                console.log(this === o);// =>true
+                f();
+                function f(){//定义一个嵌套函数f()
+                    console.log(this === o);// =>false:this的值是全局对象或undefined
+                    console.log(self === o);// =>true:self指向外部函数的this值
+                }
+            }
+        }
+        o.m();//调用对象o的方法m()
+
+    7.2.3 构造函数调用
+        构造函数调用和普通的函数调用以及方法调用在实参处理、调用上下文和返回值方面都有不同。
+        凡是没有形参的构造函数都可以省略圆括号。（new Date）
+        构造函数调用创建一个新的空对象，这个对象继承自构造函数的prototype属性。构造函数视图初始化这个新创建的对象，并将这个对象用做其调用上下文，因此构造函数可以使用this关键字来引用这个新创建的对象。注意，尽管构造函数看起来像一个方法调用，它依然会使用这个新对象作为调用上下文。也就是说，在表达式new o.m()中，调用上下文并不是o。
+
+        -----------------------------------------------------------------
+        function CO(){
+            this.p = “I’m in constructed object”;
+            this.alertP = function(){
+                alert(this.p);
+            }
+        }
+        var o2 = new CO();
+        那么，在使用new操作符来调用一个构造函数的时候，发生了什么呢？其实很简单，就发生了四件事：
+        var obj = {};//创建一个空对象obj
+        obj.__proto__ === CO.prototype;//将这个空对象的__proto__成员指向了构造函数对象的prototype成员对象，使得通过构造函数的所有对象可以共享相同的原型，这意味着同一个构造函数创建的所有对象都继承自一个相同的对象，因此它们都是一个类的对象
+        CO.call(obj);//将构造函数的作用域赋给新对象，因此CO构造函数中this指向新对象obj，然后再调用CO函数，于是我们就给obj对象赋值了一个成员变量p
+        return obj;//返回新对象obj，当构造函数里包含返回语句的时候比较特殊
+
+
+    7.2.4 间接调用
+        函数对象也可以包含方法。其中的两个方法call()和apply()可以用来间接地调用函数。两个方法都允许显式指定调用所需的this值，也就是说，任何函数可以作为对象的方法来调用，哪怕这个函数不是那个对象的方法。两个方法都可以指定调用的实参。call()方法使用它自有的实参列表作为函数的实参，apply()方法则要求以数组的形式传入参数。
+
+        ----------------------------------------------------------------------
+        call和apply都是为了改变某个函数运行时的上下文而存在的，就是为了改变函数体内部this的指向
+        例：
+        function fruits() {}
+        fruits.prototype = {
+            color: "red",
+            say: function() {
+                console.log("My color is " + this.color);
+            }
+        }
+        var apple = new fruits;
+        apple.say();    //My color is red
+        但是如果我们有一个对象banana= {color : "yellow"} ,我们不想对它重新定义 say 方法，那么我们可以通过 call 或 apply 用 apple 的 say 方法：
+        banana = {
+            color: "yellow"
+        }
+        apple.say.call(banana);     //My color is yellow
+        apple.say.apply(banana);    //My color is yellow
+
+        apply、call区别：
+        对于 apply、call 二者而言，作用完全一样，只是接受参数的方式不太一样。例如，有一个函数定义如下：
+        var func = function(arg1, arg2) {};
+        就可以通过如下方式来调用：
+        func.call(this, arg1, arg2);
+        func.apply(this, [arg1, arg2]);
+        其中 this 是你想指定的上下文，他可以是任何一个 JavaScript 对象(JavaScript 中一切皆对象)，call 需要把参数按顺序传递进去，而 apply 则是把参数放在数组里
+
+7.3 函数的实参和形参
+    7.3.1 可选形参
+        当调用函数时传入的实参比函数声明时指定的形参个数要少，剩下的形参将设置为undefined值。因此在调用函数时形参是否可选以及是否可以省略应当保持较好的适应性。为了做到这点，应当给省略的形参赋一个合理的默认值：
+        //将对象o中可枚举的属性名追加至数组中，并返回这个数组a
+        //如果省略a，则创建一个新数组并返回这个新数组
+        function getPropertyNames(o,/*optional*/a){
+            if(a === undefined){
+                a = [];//如果未定义，则使用新数组
+            }
+            for(var property in o){
+                a.push(property);
+            }
+            return a;
+        }
+        //这个函数调用可以传入1个或2个实参
+        var a = getPropertyNames(o);//将o的属性存储到一个新数组中
+        getPropertyNames(p,a);//将p的属性追加至数组a中
+        当用这种可选实参来实现函数时，需要将可选实参放在实参类表的最后。
+
+    7.3.2 可变长的实参列表：实参对象
+        //console.log(arguments)
+        //[值,callee,Symbol(Symbol.iterator),length]
+        当调用函数的时候传入的实参个数超过函数定义时的形参个数时，没办法直接获得未命名值的引用。参数对象解决了这个问题。在函数体内，标识符arguments是指向实参对象的引用，实参对象是一个类数组对象，这样可以通过数字下标就能访问传入函数的实参值，而不用非要通过名字来得到实参。
+
+        假设定义了函数f，它的实参只有一个x。如果调用这个函数时传入两个实参，第一个实参可以通过参数名x获得，也可以通过arguments[0]得到。第二个实参只能通过arguments[1]得到。此外，和真正的数组一样，arguments也包含一个length属性，用以标识其包含元素的个数。
+
+        验证实参个数（通常不必要这样检查实参个数，大多数情况下javascript默认行为是可以满足需求的：省略的实参都将是undefined，多出的参数会自动省略）：
+        function f(x,y,z){
+            //首先验证传入的个数是否正确
+            if(arguments.length != 3){
+                throw new Error('参数个数不一致')
+            }
+        }
+
+        实参对象有一个重要的用处，就是让函数可以操作任意数量的实参：
+        不定实参函数
+        function max(/*...*/){
+            var max = Number.NEGATIVE_INFINITY;
+            //遍历实参，查找并记住最大值
+            for(var i=0;i<arguments.length;i++){
+                if(arguments[i]>max){
+                    max=arguments[i]
+                }
+            }
+            return max;
+        }
+
+        数组对象有一个非同寻常的特性。在非严格模式下，当一个函数包含若干形参，实参对象的数组元素是函数形参所对应实参的别名，实参对象中以数组索引，并且形参名称可以认为是相同变量的不同命名。通过实参名字来修改实参值的话，通过arguments[]数组也可以获得更改后的值：
+        function f(x){
+            console.log(x);//输出实参的初始值
+            arguments[0] = null;//修改实参数组的元素同样会修改x的值
+            console.log(x);// =>null
+        }
+
+        callee和caller属性
+        除了数组元素，实参对象还定义了callee和caller属性。在ECMA 5严格模式中，对这两个属性的读写操作都会产生一个类型错误。而在非严格模式下，ECMA标准规范规定callee属性指代当前正在执行的函数。caller是非标准的，但大多数浏览器都实现了这个属性，它指代调用当前正在执行的函数的函数。通过callee属性可以访问调用栈。callee属性在某些时候非常有用，比如在匿名函数中通过callee来递归地调用自身：
+        var factorial = function(x){
+            if(x<=1){
+                return 1;
+            }
+            return x * arguments.callee(x-1);
+        }
+
+    7.3.3 将对象属性用做实参
+        定义函数时，传入的实参都写入一个单独的对象之中，在调用的时候传入一个对象：
+        var o = {x:1,y:1}
+        function sum(o){
+            return o.x+o.y
+        }
+
+    7.3.4 实参类型
+        对传入的实参进行类型判断处理
+
+7.4 作为值的函数
+    将函数赋值给变量：
+    function square(x){return x*x}
+    var s = square;//现在s和square指代同一个函数
+    square(4);// =>16
+    s(4);// =>16
+
+    将函数赋值给对象的属性：
+    var o = {square:function(x){return x*x}}
+    var y = o.square(16);// =>256
+
+    函数甚至不需要带名字，当把函数赋值给数组元素：
+    var a = [function(x){return x*x},20];
+    a[0](a[1]);// =>400
+
+    自定义函数属性
+    假设想写一个返回一个唯一整数的函数，不管在哪里调用函数都会返回这个整数，而函数不能两次返回同一个值，为了做到这一点，函数必须能够跟踪它每次返回的值，而且这些值的信息需要在不同的函数调用过程中持久化：
+    //初始化函数对象的计数器属性
+    //由于函数声明被提前了，因此是可以在函数声明之前给它的成员赋值的
+    uniqueInteger.counter = 0;
+    //每次调用这个函数都会返回一个不同的整数
+    //它使用一个属性来记住下一次将要返回的值
+    function uniqueInteger(){
+        return uniqueInteger.counter++;//先返回计数器的值，然后计数器自增1
+    }
+    函数factorial()使用自身的属性（将自身当做数组来对待）来缓存上一层的计算结果
+    //计算阶乘，并将结果缓存至函数的属性中
+    function factorial(n){
+        if(isFinite(n) && n>0 && Math.round(n)){//有限的正整数
+            if(!(n in factorial)){//如果没有缓存结果
+                factorial[n] = n * factorial(n-1);//计算结果并缓存之
+            }
+        }else{
+            return NAN;//如果输入有误
+        }
+    }
+    factorial[1] = 1;//初始化缓存以保存这个基本情况
+
+7.5 作为命名空间的函数
+    function之前的左圆括号是必需的，如果不写，javascript解释器会视图将关键字function解析为函数声明,立即执行函数：
+    (function(){
+        //代码块
+    }())
+
+    定义一个返回extend()函数的匿名函数：
+    /*
+        定义一个扩展函数，用来将第二个以及后续参数复制至第一个参数
+        这里处理了IE bug:在多个ie版本中
+        如果o的属性拥有一个不可枚举的同名属性，则for/in循环
+        不会枚举对象o的可枚举属性，也就是说，将不会正确处理诸如toString的属性
+        除非我们显式检测它
+    */
+    var extend = (function(){//将这个函数的返回值赋值给extend
+        //在修复它之前，首先检查是否存在bug
+        for(var p in {toString:null}){
+            //如果代码执行到这里，那么for/in循环会正确工作并返回
+            //一个简单版本的extend()函数
+            return function extend(o){
+                for(var i=1;i<arguments.length;i++){
+                    var source = arguments[i];
+                    for(var prop in source){
+                        o[prop] = source[prop];
+                    }
+                }
+                return o;
+            }
+        }
+
+        //如果代码执行到这里，说明for/in循环不会枚举测试对象的toString属性
+        //因此返回一个版本的extend()函数，这个函数是显式测试
+        //Object.property中的不可枚举属性
+        return function patched_extend(o){
+            for(var i=1;i<arguments.length;i++){
+                var source = arguments[i];
+                //复制所有的可枚举属性
+                for(var prop in source){
+                    o[prop] = source[prop];
+                }
+
+                //现在检查特殊属性
+                for(var j=0;j<protoprops.length;j++){
+                    prop = protoprops[j];
+                    if(source.hasOwnProperty(prop)){
+                        o[prop] = source[prop];
+                    }
+                }
+            }
+            return o;
+        };
+        //列出需要检查的特殊属性
+        var protoprops = ['toString','valueOf','constructor','hasOwnProperty','isPrototypeOf','propertyIsEnumerable','toLocaleString'];
+    }())
+
+7.6 闭包
+    函数定义时的作用域链到函数执行时依然有效。
+    //实现闭包
+    将作用域链描述为一个对象列表，不是绑定的栈。每次调用javascript函数时，都会为之创建一个新的对象（绑定变量的对象）用来保存局部变量，把这个对象添加至作用域链中。当函数返回的时候，就从作用域链中将这个绑定变量的对象删除。如果不存在嵌套的函数，也没有其他引用指向这个对象，它就会被当做垃圾回收掉。如果定义了嵌套的函数，每个嵌套的函数都有各自对应的一个作用域链，并且这个作用域链指向一个变量绑定的对象：但如果这些嵌套的函数对象在外部保存下来，那么它们也会和指向的变量绑定对象一样当做垃圾回收。但如果这个函数定义了嵌套的函数，并将它作为返回值返回或者存储在某处的属性里，这时就会有一个外部引用指向这个嵌套的函数，它就不会被当做垃圾回收，并且它所指向的变量绑定对象也不会被当做垃圾回收。
+
+    利用闭包重写uniqueInteger()函数：
+    var uniqueInteger = (function(){
+        var counter = 0;
+        return function(){
+            return counter++;
+        }
+    }())
+    这段代码定义了一个立即调用函数，因此是这个函数的返回值（function(){return counter++}）赋值给变量uniqueInteger
+
+    function counter(){
+        var n = 0;
+        return {
+            count:function(){return n++;},
+            reset:function(){n=0;}
+        };
+    }
+    var c = counter(),d = counter();
+    c.count();// =>0
+    d.count();// =>0
+    c.reset();
+    c.count();// =>0
+    d.count();// =>1
+
+    -----------------------------------------------------------
+    闭包指的是：能够访问另一个函数作用域的变量的函数。清晰的讲，闭包就是一个函数，这个函数能够访问其他函数的作用域中的变量。
+    当程序在调用某个函数时，做了以下的工作：准备执行环境，初始函数作用域链和arguments参数对象
+    function outer(){
+        var a = '变量1';
+        var inner = function(){
+            console.log(a);
+        }
+        return inner;//inner 就是一个闭包函数，因为它能够访问到outer函数的作用域
+    }
+    var inner = outer();//获得inner闭包函数
+    inner();//=> '变量1'
+    当程序执行完var inner = outer(),其实outer的执行环境并没有被销毁，因为它里面的变量a仍然被inner的函数作用域链所引用，当程序执行完inner()，这时候inner和outer的执行环境才会被销毁掉；由于闭包会携带包含它的函数的作用域，因为会比其他函数占用更多内容，过度使用闭包会导致内存占用过多。
+
+7.7 函数属性、方法和构造函数
+    7.7.1 length属性
+        在函数体里，arguments.length表示传入函数的实参的个数。而函数本身的length属性则有不同含义。函数的length属性只读，代表函数实参的数量，这里的参数指的是“形参”而非“实参”。
+        定义一个check()函数，从另一个函数给它传入arguments数组，它比较arguments.length（实际传入的实参个数）和arguments.callee.length（期望传入的实参个数）：
+        //这个函数使用arguments.callee，因此不能在严格模式下工作
+        function check(args){
+            var actual = args.length;//实参的真实个数
+            var expected = args.callee.length;//期望的实参个数
+            if(actual !== expected){
+                throw Error()
+            }
+        }
+        function f(x,y,z){
+            check(arguments);//检查实参个数和期望的实参个数是否一致
+            return x+y+z;
+        }
+
+    7.7.2 prototype属性
+        每一个函数都包含一个prototype属性，这个属性是指向一个对象的引用，这个对象称做“原型对象”
+
+    7.7.3 call()方法和apply()方法
+        在 javascript 中，call 和 apply 都是为了改变某个函数运行时的上下文（context）而存在的，换句话说，就是为了改变函数体内部 this 的指向。
+        JavaScript 的一大特点是，函数存在「定义时上下文」和「运行时上下文」以及「上下文是可以改变的」这样的概念。
+        function fruits() {}
+        fruits.prototype = {
+            color: "red",
+            say: function() {
+                console.log("My color is " + this.color);
+            }
+        }
+        var apple = new fruits;
+        apple.say();    //My color is red
+        但是如果我们有一个对象banana= {color : "yellow"} ,我们不想对它重新定义 say 方法，那么我们可以通过 call 或 apply 用 apple 的 say 方法：
+        banana = {
+            color: "yellow"
+        }
+        apple.say.call(banana);     //My color is yellow
+        apple.say.apply(banana);    //My color is yellow
+        所以，可以看出 call 和 apply 是为了动态改变 this 而出现的，当一个 object 没有某个方法（本栗子中banana没有say方法），但是其他的有（本栗子中apple有say方法），我们可以借助call或apply用其它对象的方法来操作。
+
+        可以将call()和apply()看做是某个对象的方法，通过调用方法的形式来间接调用函数。 call()和apply()的第一个实参是要调用函数的母对象，它是调用上下文，在函数体内通过this来获取对它的引用。要想以对象o的方法来调用函数()：
+        f.call(o);
+        f.apply(o);
+        ECMA 5的严格模式中，call()和apply()的第一个实参都会变为this的值，哪怕传入的实参是原始值甚至是null或undefined。在ECMA 3和非严格模式中，传入的null和undefined都会被全局对象替代，而其他原始值则会被相应的包装对象所替代。
+        对于call()来说，第一个调用上下文实参之后的所有实参就是要传入待调用函数的值。比如，以对象o的方法的形式调用函数f()，并传入两个参数：
+        f.call(o,1,2);
+        apply()方法和call()类似，但传入实参的形式和call()有所不同，它的实参都放入一个数组当中：
+        f.apply(o,[1,2]);
+
+    7.7.4 bind()方法
+        将函数绑定至某个对象。当在函数f()上调用bind()方法并传入一个对象o作为参数，这个方法将返回一个新的函数。（以函数调用的方式）调用新的函数将会把原始的函数f()当做o的方法来调用。传入新函数的任何实参都将传入原始函数：
+        function f(y){//这个是待绑定的函数
+            return this.x+y;
+        }
+        var o = {x:1};//将要绑定的对象
+        var g = f.bind(o);//通过g(x)来调用o.f(x)
+        g(2);// =>3
+
+        实现ECMA5 bind()：
+        //返回一个函数，通过调用它来调用o中的方法f()，传递它所有的实参
+        function bind(f,o){
+            if(f.bind){
+                return f.bind(o);//如果bind()方法存在，使用bind()方法
+            }else{
+                return function(){
+                    return f.apply(o,arguments);
+                }
+            }
+        }
+
+    7.7.5 toString()方法
+        大多数的toString()方法的实现都返回函数的完整源码。内置函数往往返回一个类似"[native code]"的字符串作为函数体
+
+    7.7.6 Function()构造函数
+
+    7.7.7 可调用的对象
+        检测一个对象是否是真的函数对象：
+        function isFunction(x){
+            return Object.property.toString.call(x) === '[object Function]';
+        }
+
+7.8 函数式编程
+    7.8.1 使用函数处理数组
+    7.8.2 高阶函数
+        高阶函数就是操作函数的函数，它接收一个或多个函数作为参数，并返回一个新函数
+    7.8.3 不完全函数
+    7.8.4 记忆
+
+
+
+jQuery：
+1. jQuery.extend()方法有一个重载
+    jQuery.extend(object)，一个参数的用于扩展jQuery类本身，也就是用来在jQuery类/命名空间上增加新函数，或者叫静态方法，例如jQuery内置的ajax方法都是用jQuery.ajax()这样调用的，有点像“类名.方法名”静态方法的调用方式。

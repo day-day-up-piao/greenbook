@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+    </body>
+</html>
+<script type="text/javascript">
+    function inherit(p){
+        if(p == null) throw TypeError('不能为null');//p是一个对象，但不能是null
+        if(Object.create){//如果Ojbect.create()存在
+            return Object.create(p);//直接使用
+        }
+        var t = typeof p;//否则进行进一步检测
+        if(t !== "object" && t !== "function"){
+            throw TypeError();
+        }
+        function f(){};//定义一个空构造函数
+        f.prototype = p;//将其原型属性设置为p
+        return new f();//使用f()创建p的继承对象
+    }   
+    var o = inherit({age:20});
+    o.name = 'haha';
+    // 检测对象是否存在某个属性的3种方法
+    console.log('检测属性');
+    console.log("age" in o);
+    console.log(o.hasOwnProperty('name'));
+    console.log(o.propertyIsEnumerable('age'));
+
+    // 枚举属性的3种方法
+    console.log('枚举属性');
+    for(var i in o){console.log(i)}
+    console.log(Object.keys(o));
+    console.log(Object.getOwnPropertyNames(o));
+
+    // getter setter
+    var o1 = {
+        name:'哈哈',
+        get gg(){
+
+        },
+        set gg(){
+            
+        }
+    }
+
+</script>

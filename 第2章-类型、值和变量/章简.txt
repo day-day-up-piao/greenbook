@@ -1,0 +1,216 @@
+数据类型分类：
+    1.原始类型（数字、字符串、布尔值、null(空)、undefined(未定义)、symbol()）
+    2.对象类型（object、全局对象、函数、数组、日期、正则、错误）
+
+2.1 数字(和其他编程语言不同，javascript不区分整数值和浮点数值，javascript中的所有数字均用浮点数表示，表示范围-2的53次方~2的53次方(包括边界))
+    进制转换
+    2.1.1 整型直接量（进制问题：二进制，八进制，十进制，十六进制）
+    2.1.2 浮点型直接量（指数记数法）
+    2.1.3 javascript中的算术运算
+        +,-,*,/,%,除了基本的运算符外，还支持更复杂的算术运算:Math对象。javascript中的算术运算在溢出，下溢或被零整除时不会报错。当数字运算结果超过了javascript所能表示的数字上限(溢出)，结果为一个特殊的无穷大(infinity)，下溢是当运算无限接近零并比javascript能表示的最小值还小的时候发生的一种情形，这种情况下，javascript将会返回0，当一个负数发生下溢时，javascript返回一个特殊的值‘负零’，这个值几乎和正常的零完全一样。
+        除，除以，被除
+        32÷8=4;
+        1. 8除32等于4
+        2. 32除以8等于4
+        3. 32被8除等于4
+    2.1.4 二进制浮点数和四舍五入错误（极客时间：重学前端）
+        javascript采用IEEE-754浮点表示法，这是一种二进制表示法
+    2.1.5 日期和时间
+        getFullYear()//年
+        getMonth()//月
+        getDate()//日
+        getHours()//时
+        getMinutes()//分
+        getSeconds()//秒
+        getDay()//星期
+        var then = new Date(2011,0,1);//2011年1月1日
+        var later = new Date(2011,0,1,17,10,30);//2011年1月1日，当地时间5:10:30pm
+        var now = new Date();//当前日期和时间 
+        var elapsed = now - then;//日期减法：计算时间间隔的毫秒数
+        later.getFullYear();// =>2011(年)
+        later.getMonth();// =>0：从0开始计数的月份(月)
+        later.getDate();// =>1：从1开始计数的天数(日)
+        later.getHours();// =>当地时间17:5pm(时)
+        later.getMinutes()//(分)
+        later.getSeconds()//(秒)
+        later.getDay();// =>6：得到星期几，0代表星期日(星期)
+        later.getUTCHours();// 使用UTC表示小时的时间，基于时区
+
+2.2 文本
+    2.2.1 字符串直接量
+    2.2.2 转义字符
+    2.2.3 字符串的使用
+        var s = "hello, world";
+        s.charAt(0);// =>"h"：第一个字符
+        s.charAt(s.length-1);// =>"d"：最后一个字符
+        s.substr(1,4);// =>"ello"：第2~4个字符（包括第四个字符）
+        s.substring(1,4);// =>"ell"：第2~4个字符（不包括第四个字符）
+        s.slice(1,4);// =>"ell"：第2~4个字符（不包括第四个字符）
+        s.slice(-3);// =>"rld"：最后三个字符
+        s.indexOf("l");// =>2：字符l首次出现的位置
+        s.lastIndexOf("l");// =>10：字符l最后一次出现的位置
+        s.indexOf("l",3);// =>3：在位置3及之后首次出现字符l的位置
+        s.split(",");// =>["hello","world"]分割成子串
+        s.replace("h","H");// =>"Hello, world"：全文字符替换
+        s.toUpperCase();// =>"HELLO, WORLD"
+        s.toLowerCase();
+    2.2.4 模式匹配
+        var text = "testing:1,2,3";
+        var pattern = /\d+/g;// 匹配所有包含一个或多个数字的实例
+        pattern.test(text);// =>true：匹配成功
+        text.search(pattern);// =>9：首次匹配成功的位置
+        text.match(pattern);// =>["1","2","3"]：所有匹配组成的数组
+        text.replace(pattern,"#");// =>"testing:#,#,#"
+        text.split(/\D+/);// =>["","1","2","3"]：用非数字字符串截取字符串
+
+2.3 布尔值
+    undefined、null、0、-0、"" 会被转换成false
+
+2.4 null和undefined
+    typeof null =>object
+    typeof undefined =>undefined
+
+2.5 全局对象
+    全局属性：undefined、Infinity、NaN
+    全局函数：isNaN()、parseInt()、eval()
+    构造函数：Date()、RegExp()、String()、Object()、Array()
+    全局对象：Math、JSON
+
+2.6 包装对象
+
+2.7 不可变的原始值和可变的对象引用
+    数组复制
+    var a = ['a','b','c'];
+    var b = [];
+    for(var i = 0;i < a.length;i++){
+        b[i] = a[i];
+    }
+
+    比较两个单独的对象或数组是否相等
+    function equalArrays(a,b){
+        if(a.length != b.length) return false;//两个长度不同的数组不相等
+        for(var i= 0;i < a.length;i++){
+            if(a[i] !== b[i]) return false;//如果有任意元素不等，则数组不相等
+        }
+        return true
+    }
+
+2.8 类型转换
+    2.8.1 转换和相等性
+    2.8.2 显示类型转换
+        Number("3");// =>3
+        String(false);// =>"false" 或使用 false.toString()
+        Boolean([]);// =>true
+        Object(3);// =>new Number(3)
+        除了null和undefined之外的任何值都具有toString()方法，这个方法的执行结果通常和String()方法的返回结果一致
+    2.8.3 对象转换成原始值
+        toString()
+        ({x:1,y:2}).toString();// =>"[object Object]"
+        [1,2,3].toString();// =>"1,2,3"：将每个数组元素转换成一个字符串，并在元素之间添加逗号后合并成结果字符串
+        (function(x){f(x);}).toString();// =>"function(x){\n f(x);\n}"：返回这个函数的实现定义的表示方式，转换成源代码字符串
+        /\d+/g.toString();// =>"/\\d+/g"：将RegExp对象转换为表示正则表达式直接量的字符串
+        new Date(2010,0,1).toString();// =>"Fri Jan 01 2010 00:00:00 GMT-0800(PST)"：返回一个可读的日期和时间字符串
+
+        valueOf():如果存在任意原始值，它就默认将对象转换为表示它的原始值。对象是复合值，而且大多数对象无法真正表示为一个原始值，因此默认的valueOf()方法简单地返回对象本身
+        {x:1,y:2}.valueOf();// =>{x:1,y:2}
+        [1,2,3].valueOf();// =>[1,2,3]
+        (function(x){f(x);}).valueOf();// =>function(x){f(x);}
+        /\d+/g.valueOf();// =>/\d+/g
+        new Date(2010,0,1).valueOf();// =>1262332800000：返回一个1970年1月1日以来的毫秒数
+
+2.9 变量声明
+
+2.10 变量作用域
+    在函数体内，局部变量的优先级高于同名的全局变量
+    var scope = "global";
+    function checkscope(){
+        var scope = "local";
+        return scope;
+    }
+    checkscope();// =>"local"
+
+    尽管在全局作用域编写代码是可以不写var语句，但声明局部变量时则必须使用var语句
+    scope = "global";
+    function checkscope2(){
+        scope = "local";//修改了全局变量
+        myscope = "local";//这里显示地声明了一个新的全局变量
+        return [scope,myscope];
+    }
+    checkscope2();// =>["local","local"]：产生了副作用
+    scope;// =>"local"：全局变量修改了
+    myscope;// =>"local"：全局命名空间搞乱了
+
+    函数定义是可以嵌套的
+    var scope = "global scope";
+    function checkscope(){
+        var scope = "local scope";
+        function nested(){
+            var scope = "nested scope";
+            return scope;
+        }
+        return nested();
+    }
+    checkscope();// =>"nested scope"
+
+    2.10.1 函数作用域和声明提前
+        提升有变量提升和函数提升之分，只有函数声明形式才能被提升
+        函数里声明的所有变量（但不涉及赋值）都被"提前"至函数体的顶部
+        var scope = "global";
+        function f(){
+            console.log(scope);//输出"undefined"，而不是"global"
+            var scope = "local";//变量在这里赋初始值，但变量本身在函数体内任何地方均是有定义的
+            console.log(scope);//输出"local"
+        }
+        由于函数作用域的特性，局部变量在整个函数体始终是有定义的，也就是说，在函数体内部变量遮盖了全局变量
+        function f(){
+            var scope;
+            console.log(scope);
+            scope = "local";
+            cosnole.log(scope);
+        }
+
+    2.10.2 作为属性的变量
+        当声明一个javascript全局变量时，实际上是定义了全局对象的一个属性。当使用var声明一个变量时，创建的这个属性是不可配置的，也就是说这个变量无法通过delete运算符删除。如果没有使用严格模式并给一个未声明的变量赋值的话，javascript会自动创建一个全局变量。以这种方式创建的变量时全局对象的正常的可配值属性，并可以删除它们。
+        var truevar = 1;//声明一个不可删除的全局变量
+        fakevar = 2;//创建全局对象的一个可删除的属性
+        this.fakevar2 = 3;//创建全局对象的一个可删除的属性
+        delete truevar;//false:变量并没有删除
+        delete fakevar;//true:变量被删除
+        delete this.fakevar2;//true:变量被删除
+        javascript全局变量是全局对象的属性，这是在ECMAScript规范中强制规定的。对于局部变量则没有如此规定，但可以想象得到，局部变量当做跟函数调用相关的某个对象的属性。ECMAScript3规范称该对象为‘调用对象’，ECMAScript5规范称为‘声明上下文对象’。
+
+    2.10.3 作用域链
+        ------------------------------------------------------------------------
+        （全局作用域和局部作用域中变量的访问权限，其实是由作用域链决定的，每次进入一个新的执行环境，都会创建一个用于搜索变量和函数的作用域链。作用域链是函数被创建的作用域中对象的集合，作用域链可以保证对执行环境有权访问的所有变量和函数的有序访问，作用域链的最前端始终是执行的代码所在环境的变量对象(如果该环境是函数，则将其活动对象作为变量对象)，下一个变量对象来自包含环境(包含当前还运行环境的环境)，下一个变量对象来自包含环境的包含环境，依次往上，直到全局执行环境的变量对象，全局执行环境的变量对象始终是作用域链中的最后一个对象）
+        var name1 = "haha";
+        function changeName(){
+            var name2="xixi";
+            function swapName(){
+                console.log(name1);//haha
+                console.log(name2);//xixi
+                var tempName=name2;
+                name2=name1;
+                name1=tempName;
+                console.log(name1);//xixi
+                console.log(name2);//haha
+                console.log(tempName);//xixi
+            }
+            swapName();
+            console.log(name1);//haha
+            console.log(name2);//xixi
+            //console.log(tempName);抛出错误：Uncaught ReferenceError: tempName is not defined
+        }
+        changName();
+        console.log(name1);
+        //console.log(name2); 抛出错误：Uncaught ReferenceError: name2 is not defined
+        //console.log(tempName);抛出错误：Uncaught ReferenceError: tempName is not defined
+        上述代码中，一共有三个执行环境：全局环境、changeName()的局部环境和swapName()的局部环境。所以，
+        1.函数swapName()的作用域链包含三个对象：自己的变量对象--->changeName()局部环境的变量对象--->全局环境的变量对象
+        2.函数changeName()的作用域链包含两个对象：自己的变量对象--->全局环境的变量对象
+        作用域链相关知识总结：
+        1.执行环境决定了变量的声明周期，以及哪部分代码可以访问其中变量
+        2.执行环境有全局环境和局部执行环境之分
+        3.每次进入一个新的执行环境，都会创建一个用于搜索变量和函数的作用域链
+        4.函数的局部环境可以访问函数作用域中的变量和函数，也可以访问其父环境，乃至全局环境中的变量和函数
+        5.全局环境只能访问全局环境中定义的变量和函数，不能直接访问局部环境中的任何数据
+        6.变量的执行环境有助于确定应该合适释放内存

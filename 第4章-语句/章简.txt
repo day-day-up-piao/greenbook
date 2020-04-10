@@ -1,0 +1,81 @@
+4.1 表达式语句
+4.2 复合语句和空语句
+    javascript中没有块级作用域，在语句块中声明的变量并不是语句块私有的
+    空语句：
+    var a = [1,2,3,4,5];
+    for(i=0;i<a.length;a[i++]=0);//=>i=4,a[0,0,0,0,0]
+4.3 声明语句
+    4.3.1 var
+    4.3.2 function
+4.4 条件语句
+    4.4.1 if
+    4.4.2 else if
+    4.4.3 switch
+4.5 循环
+    4.5.1 while
+    4.5.2 do/while
+    4.5.3 for
+        在循环开始之前要初始化这个变量，然后在每次循环执行之前都检测一下它的值，最后计数器变量做自增操作
+        for这一类循环中，计数器的三个关键操作是初始化、检测和更新
+    4.5.4 for/in
+        for(variable in object){
+            statement
+        }
+        for/in循环则是用来更方便地遍历对象属性成员
+        for(var p in o)//将属性名字赋值给变量p
+            console.log(o[p]);//输出每一个属性的值
+        在执行for/in语句的过程中，javascript解释器首先计算object表达式，如果表达式为null或undefined，javascript解释器将会跳过循环并执行后续的代码。如果表达式等于一个原始值，这个原始值将会转换为与之对应的包装对象。否则，表达式本身已经是对象了。javascript会依次枚举对象的属性来执行循环。然而在每次循环之前，javascript都会先计算variable表达式的值，并将属性名赋值给它。
+        for/in循环并不会遍历对象的所有属性，只有‘可枚举’的属性才会遍历到，那些继承的自定义属性也可以枚举出来
+4.6 跳转
+    4.6.1 标签语句
+    4.6.2 break语句
+    4.6.3 continue语句
+    4.6.4 return语句
+    4.6.5 throw语句
+        所谓异常（exception）是当发生了某种异常情况或错误时发生的一个信号。throw exception：exception的值可以是任意类型的
+        function factorial(x){
+            if(x<0) throw new Error('x不能是负数');
+            for(var f=1;x>1;f*=x,x--) /*empty*/ ;
+            return f;
+        }
+        当抛出异常时，javascript解析器会立即停止当前正在执行的逻辑，并跳转至就近的异常处理程序。异常处理程序是用try/catch/finally语句的catch从句编写的
+    4.6.6 try/catch/finally语句
+        try{
+            //通常来讲，这里的代码会从头执行到尾而不会产生任何问题，
+            //但有时会抛出一个异常，要么是由throw语句直接抛出异常，
+            //要么通过调用一个方法间接抛出异常
+        }catch(e){
+            //当且仅当try语句块抛出了异常，才会执行这里的代码
+            //这里可以通过局部变量e来获取对Error对象或者抛出的其他的值得引用
+            //这里的代码块可以基于某种原因处理这个异常，也可以忽略这个异常
+            //还可以通过throw语句重新抛出异常
+        }finally{
+            //不管try语句块是否抛出异常，这里的逻辑总会执行，终止try语句块的方式有：
+            //1.正常终止，执行完语句块的最后一条语句
+            //2.通过break、continue、或return语句终止
+            //3.抛出一个异常，异常被catch从句捕获
+            //4.抛出一个异常，异常未被捕获，继续向上传播
+        }
+        function factorial(x){
+            if(x<0){
+                    // throw new Error('x不能为负数');
+                    throw '输入有误';
+            }
+            for(var f=1;x>1;f=f*x,x--) ;
+            return f;
+        }
+        try{
+            var n = Number(prompt('请输入一个正整数',''));//要求用户输入一个数字
+            var f = factorial(n);//假设输入是合法的，计算这个数的阶乘
+            alert(n+"="+f);
+        }catch(ex){//ex：当捕获一个异常时，把和这个异常相关的值（比如Error对象）赋值给这个参数
+            alert(ex);//告诉用户产生了什么错误
+        }finally{
+            console.log('哈哈哈')
+        }
+
+4.7 其他语句类型
+    4.7.1 with语句
+    4.7.2 debugger语句
+    4.7.3 "use strict"
+4.8 javascript语句小结

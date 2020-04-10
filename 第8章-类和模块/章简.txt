@@ -1,0 +1,42 @@
+javascript的类和基于原型的继承机制
+function inherit(p){
+    if(p == null) throw TypeError();//p是一个对象，但不能是null
+    if(Object.create){//如果Ojbect.create()存在
+        return Object.create(p);//直接使用
+    }
+    var t = typeof p;//否则进行进一步检测
+    if(t !== "object" && t !== "function"){
+        throw TypeError();
+    }
+    function f(){};//定义一个空构造函数
+    f.prototype = p;//将其原型属性设置为p
+    return new f();//使用f()创建p的继承对象
+} 
+
+8.1 类和原型
+    类的所有实例对象都从同一个原型对象上继承属性，因此，原型对象是类的核心。
+    定义一个原型对象，通过inherit()函数创建一个继承自它的对象，这样就定义了一个javascript类：
+    var prototypeObj = {width:100,height:100}
+    var createObj = inherit(prototypeObj)
+    通常，类的实例还需要进一步的初始化，通常是通过定义一个函数来创建并初始化这个新对象。
+
+
+
+
+
+
+
+
+像素、分辨率、PPI、DPI、DP、DIP、DPR、视口
+一、英寸：屏幕对角线的长度（1英寸=2.54厘米）
+二、分辨率
+    2.1 像素：即一个小方块，它具有特定的位置和颜色
+    2.2 屏幕分辨率：指一个屏幕具体由多少个像素点组成（分辨率高不代表屏幕就清晰，屏幕的清晰程度还与尺寸有关）
+    2.3 图像分辨率：通常说的图片分辨率其实是指图片含有的像素数，比如一张图片的分辨率为800*400，这表示图片分别在垂直和水平上所具有的像素点数为800和400
+    2.4 PPI（pixel per inch）：每英寸的像素数，使用PPI描述图片时，PPI越高，图片质量越高，使用PPI描述屏幕时，PPI越高，屏幕越清晰
+        PPI计算方法：
+        (水平像素点数的平方+垂直像素点数的平方)开方/尺寸，如iphone6：(1334*1334+750*750)开方/4.7=325.6
+    2.5 DPI（dot per inch）:每英寸的点数
+三、设备独立像素（device independent pixels）简称DIP或DP
+    实际上，上面描述的像素都是物理像素，即设备上真实的物理单元
+    3.1 设备像素比（device pixel ratio）简称dpr，即物理像素和设备独立像素的比值
