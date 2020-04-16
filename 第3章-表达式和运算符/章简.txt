@@ -55,3 +55,21 @@
     3.13.3 delete运算符
     3.13.4 void运算符
     3.13.5 逗号运算符(,)
+
+
+
+    前置/后置递增/递减
+    var num1 = 1;
+    var num2 = ++num1 + num1++
+    console.log(num2);//4
+    console.log(num1);//3
+    
+    var num1 = 1;
+    var num2 = num1++ + num1++;
+    console.log(num2);//3
+    console.log(num1);//3
+
+    var num1 = 1;
+    var num2 = ++num1 + ++num1;
+    console.log(num2);//5
+    console.log(num1);//3

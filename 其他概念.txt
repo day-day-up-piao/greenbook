@@ -1,0 +1,64 @@
+编译型语言
+使用专门的编译器，针对特定的平台，将高级语言源代码一次性的编译成可被该平台硬件执行的机器码，并包装成该平台所能识别的可执行性程序的格式
+特点：执行效率高
+
+解释型语言
+使用专门的解释器对源程序逐行解释成特定平台的机器码并立即执行。是代码在执行时才被解释器一行行动态翻译和执行，而不是在执行之前就完成翻译
+特点：执行效率低
+
+
+
+
+
+易忘点
+prototype（原型）
+property（属性）
+获取原型：
+1.所有通过对象直接量创建的对象都具有同一个原型对象，Object.prototype获得对原型对象的引用（如： var obj = {name:xxx}获取对象原型，Object.prototype）
+2.通过new关键字和构造函数调用创建的对象的原型就是构造函数.prototype（如：var obj = new Object()获取对象原型 Object.prototype / obj.__proto__）
+3.Object.getPrototypeOf('对象')
+
+一、检测属性
+1.in
+2.hasOwnproperty()
+3.propertyIsEnumerable()
+
+二、枚举属性
+1.for/in
+2.Object.keys()
+3.Object.getOwnPropertyNames()
+
+三、获得某个对象特定属性（自有属性）的属性描述符
+Object.getOwnPropertyDescriptor({x:1},'x')
+//返回 {value: 1, writable: true, enumerable: true, configurable: true}
+对于继承属性和不存在的属性，返回undefined
+
+四、设置属性的特性，或让新建属性具有某种特性
+var o = {};
+//给o对象添加一个不可枚举的数据属性x，并赋值为1
+Object.defineProperty(o,'x',{
+    value:1,
+    writable:true,
+    enumerable:false,
+    configurable:true
+})
+这个方法要么修改已有属性要么新建自有属性，但不能修改继承属性
+如果要同时修改或创建多个属性，则需要使用Object.defineProperties()。第一个参数是要修改的对象，第二个参数是一个映射表，它包含要新建或修改的属性名称，以及它们的属性描述符，如：
+var p = Object.defineProperties({},{
+    x:{value:1,writable:true,enumerable:true,configurable:true},
+    r:{
+        get:function{return Math.sqrt(this.x*this.x+this.y*this.y)},
+        enumerable:true,
+        configurable:true
+    }
+})
+
+五、判断该对象是否是可扩展的
+Object.isExtensible(obj)//返回Boolean
+Object.isSealed(obj)
+Object.isFrozen(obj)
+
+六、将对象转为不可扩展
+Object.preventExtensions(obj)
+Object.seal(obj)
+Object.freeze(obj)

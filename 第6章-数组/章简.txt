@@ -18,7 +18,9 @@
     0 in a1;// =>false：a1在索引0处没有元素
     0 in a2;// true：a2在索引0处有一个值为undefined的元素
 
-6.4 数组长度
+6.4 数组长度（属性）
+    数组.length
+    
 6.5 数组元素的添加和删除
     push()：在数组末尾添加一个或多个元素
     unshift()：在数组的头部插入一个元素
@@ -215,7 +217,7 @@
         //计算数组元素的和值
         var sum = 0;
         data.forEach(
-            function(value){
+            function(value,index){
                 sum += value;
             }
         );

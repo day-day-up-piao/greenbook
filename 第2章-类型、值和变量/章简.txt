@@ -36,6 +36,16 @@
         later.getDay();// =>6：得到星期几，0代表星期日(星期)
         later.getUTCHours();// 使用UTC表示小时的时间，基于时区
 
+    isNaN：判断目标数据是否为非数字
+    isNaN(1);//false
+    isNaN('1');//false
+    isNaN('test');//true
+
+    parseInt('1.23test');//1
+    parseInt('test123');//NaN
+    parseFloat('1.23test');//1.23
+
+    
 2.2 文本
     2.2.1 字符串直接量
     2.2.2 转义字符
@@ -63,12 +73,21 @@
         text.replace(pattern,"#");// =>"testing:#,#,#"
         text.split(/\D+/);// =>["","1","2","3"]：用非数字字符串截取字符串
 
+    字符串拼接
+    console.log(11+'12'+13);//111213
+    console.log(1+ +'2'+3);//5
+    console.log(true+false+1+'');//2
+
+
 2.3 布尔值
     undefined、null、0、-0、"" 会被转换成false
 
 2.4 null和undefined
     typeof null =>object
     typeof undefined =>undefined
+
+    console.log(null == undefined);//true
+    console.log(null === undefined);//false
 
 2.5 全局对象
     全局属性：undefined、Infinity、NaN
@@ -100,7 +119,7 @@
     2.8.2 显示类型转换
         Number("3");// =>3
         String(false);// =>"false" 或使用 false.toString()
-        Boolean([]);// =>true
+        Boolean([]);// =>true               undefined、null、0、-0、""、NaN 会被转换成false
         Object(3);// =>new Number(3)
         除了null和undefined之外的任何值都具有toString()方法，这个方法的执行结果通常和String()方法的返回结果一致
     2.8.3 对象转换成原始值

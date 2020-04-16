@@ -9,6 +9,7 @@
             console.log(test[i]);//属性值
         }
     可配置(configurable attribute)，表明是否可以删除或修改该属性
+    vaule
 
 
 对象特征：
@@ -17,11 +18,11 @@
     对象的扩展标记(extensible flag)指明了是否可以向该对象添加新属性
 
 对三类javascript对象和两类属性作区分：
-    .内置对象是由ECMAScript规范定义的对象或类。例如，数组、函数、日期和正则表达式都是内置对象。
-    .宿主对象是由javascript解析器所嵌入的宿主环境（比如web浏览器）定义的。客户端javascript中表示网页结构的HTMLElement对象均是宿主对象。既然宿主环境定义的方法可以当成普通的javascript函数对象，那么宿主对象也可以当成内置对象。
-    .自定义对象是由运行中的javascript代码创建的对象。
-    .自有属性是直接在对象中定义的属性。
-    .继承属性是在对象的原型对象中定义的属性。
+    .内置对象-是由ECMAScript规范定义的对象或类。例如，数组、函数、日期和正则表达式都是内置对象。
+    .宿主对象-是由javascript解析器所嵌入的宿主环境（比如web浏览器）定义的。客户端javascript中表示网页结构的HTMLElement对象均是宿主对象。既然宿主环境定义的方法可以当成普通的javascript函数对象，那么宿主对象也可以当成内置对象。
+    .自定义对象-是由运行中的javascript代码创建的对象。
+    .自有属性-是直接在对象中定义的属性。
+    .继承属性-是在对象的原型对象中定义的属性。
 
 5.1 创建对象
     可以通过对象直接量、关键字new和Object.create()函数来创建对象
@@ -36,6 +37,9 @@
             author:{
                 firstname:"David",
                 surname:"Flanagan"
+            },
+            read:function(){
+                console.log(this);//this指向该对象
             }
         }
         在ECMAScript 5（以及ECMAScript 3的一些实现）中，保留字可以用做不带引号的属性名。对于ECMA 3来说，使用保留字作为属性名必须使用引号引起来。在ECMA 5中，对象直接量中的最后一个属性后的逗号将忽略，ECMA 3的大部分实现中也可以忽略这个逗号，但在IE中则报错。
@@ -57,6 +61,11 @@
         其他原型对象都是普通对象，普通对象都具有原型。
         所有的内置构造函数（以及大部分自定义的构造函数）都具有一个继承自Object.prototype的原型。
         例如：Date.prototype的属性继承自Object.prototype，因此由new Date()创建的Date对象的属性同时继承自Date.prototype和Object.prototype。
+        获取原型：
+            1.所有通过对象直接量创建的对象都具有同一个原型对象，Object.prototype获得对原型对象的引用（如： var obj = {name:xxx}获取对象原型，Object.prototype）
+            2.通过new关键字和构造函数调用创建的对象的原型就是构造函数.prototype（如：var obj = new Object()获取对象原型 Object.prototype / obj.__proto__）
+            3.Object.getPrototypeOf('对象')
+
     5.1.4 Object.create()创建对象
         ECMAScript 5定义了一个名为Object.create()的方法，它创建一个新对象，其中第一个参数是这个对象的原型。Object.create()提供第二个可选参数，用以对对象的属性进行进一步描述。
         Object.create()是一个静态函数，而不是提供给某个对象调用的方法。只需传入所需的原型对象即可。
@@ -145,19 +154,19 @@
 
 5.4 检测属性
     检测集合中成员的所属关系——判断某个属性是否存在于某个对象中。可以通过in运算符、hasOwnPreperty()和propertyIsEnumerable()方法来完成这个工作，甚至仅通过属性查询也可以做到这一点。
-    in运算符的左侧是属性名（字符串），右侧是对象。如果对象的自有属性或继承属性中包含这个属性则返回true：
+    1.in运算符的左侧是属性名（字符串），右侧是对象。如果对象的自有属性或继承属性中包含这个属性则返回true：
     var o = {x:1};
     'x' in o;//true：'x'是o的属性
     'y' in o;//false：'y'不是o的属性
     'toString' in o;//true：o继承toString属性
 
-    对象的hasOwnProperty()方法用来检测给定的名字是否是对象的自有属性。对于继承属性它将返回false：
+    2.对象的hasOwnProperty()方法用来检测给定的名字是否是对象的自有属性。对于继承属性它将返回false：
     var o = {x:1};
     o.hasOwnProperty('x');//true：o有一个自有属性x
     o.hasOwnProperty('y');//false：o中不存在属性y
     o.hasOwnProperty('toString');//false：toString是继承属性
 
-    propertyIsEnumerable()是hasOwnProperty()的增强版，只有检测到时自有属性且这个属性的可枚举为true时它才返回true。某些内置属性是不可枚举的：
+    3.propertyIsEnumerable()是hasOwnProperty()的增强版，只有检测到时自有属性且这个属性的可枚举为true时它才返回true。某些内置属性是不可枚举的：
     var o = inherit({y:2});
     o.x = 1;
     o.propertyIsEnumerable('x');//true：o有一个可枚举的自有属性x
@@ -376,15 +385,54 @@
         }
     }
 
+
+    属性getter和setter（只能应用到单个属性上，getter/setter是隐藏函数，是访问器属性默认拥有的隐藏函数）
+    当程序'查询'存取器属性的值时，javascript调用getter方法（无参数）。这个方法的返回值就是属性存取表达式的值。
+    当程序'设置'一个存取器属性的值时，javascript调用setter方法，将赋值表达式右侧的值当做参数传入setter。
+    var myObject = {
+        //给a定义一个getter
+        get a(){
+            // return this._a_;
+        },
+        //给a定义一个setter
+        set a(val){
+            this._a_=val * 2;
+        }
+    }
+    myObject.a=2;//将赋值表达式的值当做参数传入setter
+    myObject.a;//4
+    注意语法规则，是通过get和set关键字创建a属性的getter和setter函数。get函数是没有参数的，set函数会将等号右边的值作为参数。
+    
+    简单的getter,setter
+    window.x = {
+        _num:50,
+        get percent(){
+            return this._num + '%'
+        },
+        set percent(value){
+            console.log('update _num:'+value);
+            this._num = value
+        }
+    }
+    // 注意语法规则，是通过get和set关键字创建percent属性的getter和setter函数。get函数是没有参数的，set函数会将等号右边的值作为参数。当访问percent属性时，会返回_num加%，当设置percent时，会打印日志并将值赋值给_num
+    
+
+
 5.7 属性的特性
     除了包含名字和值之外，属性还包含一些标识它们可写、可枚举和可配置的特性。在ECMA 3中无法设置这些特性，所有通过ECMA 3的程序创建的属性都是可写的、可枚举的和可配置的，且无法对这些特性做修改。
     ECMA 5中查询和设置这些属性特性的api，这些api对于库的开发者来说非常重要，因为：
     .可以通过这些api给原型对象添加方法，并将它们设置成不可枚举的，这让它们看起来更像内置方法。
     .可以通过这些api给对象定义不能修改或删除的属性，借此“锁定”这个对象。
 
-    可以认为一个属性包含一个名字和4个特性：
-    数据属性的4个特性分别是：它的值、可写性、可枚举性和可配置性
-    存取器属性的4个特性分别是：读取(get)、写入(set)、可枚举性和可配置性（存取器属性不具有值特性和可写性，它们的可写性是由setter方法存在与否决定的）
+    ES5中查询和设置属性特性API
+    1.可以通过这些API给原型对象添加方法，并将它们设置成不可枚举的，这让它们看起来更像内置方法
+    2.可以通过这些API给对象定义不能修改或删除的属性，借此“锁定”这个对象
+    数据属性4个特性：可配置（configurable），可枚举（enumerable），可写（writable），值（value）
+    存取器属性4个特性：可配置（configurable），可枚举（enumerable），读取（get），写入（set）
+
+    “属性描述符”对象：这个对象代表以上4个特征。描述符对象的属性和它们所描述的属性特性是同名的。因此，
+    数据属性的描述符对象的属性有configurable，enumerable，writable，value
+    存取器属性的描述符对象的属性有configurable，enumerable，get，set
 
     为了实现属性的查询和设置操作，ECMA 5中定义了一个名为“属性描述符”的对象，这个对象代表那4个特性。描述符对象的属性和它们所描述的属性特性是同名的。因此：
     数据属性的描述符对象的属性有：value、writable、enumerable和configurable
